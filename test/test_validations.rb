@@ -12,7 +12,9 @@ class ValidatesUniquenessTest < ParanoidBaseTest
   end
 
   def test_should_validate_without_deleted
+
     ParanoidBoolean.new(:name => 'paranoid').tap do |record|
+      ParanoidBoolean.create(name: 'paranoid')
       refute record.valid?
       ParanoidBoolean.first.destroy
       assert record.valid?
