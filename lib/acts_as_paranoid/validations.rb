@@ -22,7 +22,7 @@ module ActsAsParanoid
           table = finder_class.arel_table
 
           coder = record.class.attribute_types[attribute.to_s]
-          value = coder.type_cast_for_schema value if value && coder
+          value = coder.serialize value if value && coder
 
           relation = build_relation(finder_class, table, attribute, value)
           [Array(finder_class.primary_key), Array(record.send(:id))].transpose.each do |pk_key, pk_value|
@@ -33,7 +33,7 @@ module ActsAsParanoid
             relation = relation.where(table[scope_item].eq(record.public_send(scope_item)))
           end
 
-          if relation.where(finder_class.paranoid_default_scope).where(relation).exists?
+          if relation.where(finder_class.paranoid_default_scope).where(id: relation.map(&:id)).exists?
             record.errors.add(attribute, :taken, options.except(:case_sensitive, :scope).merge(:value => value))
           end
         end
